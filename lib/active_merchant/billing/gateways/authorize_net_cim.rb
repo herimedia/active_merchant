@@ -1,23 +1,23 @@
 module ActiveMerchant #:nodoc:
   module Billing #:nodoc:
     # ==== Customer Information Manager (CIM)
-    # 
+    #
     # The Authorize.Net Customer Information Manager (CIM) is an optional additional service that allows you to store sensitive payment information on
-    # Authorize.Net's servers, simplifying payments for returning customers and recurring transactions. It can also help with Payment Card Industry (PCI) 
+    # Authorize.Net's servers, simplifying payments for returning customers and recurring transactions. It can also help with Payment Card Industry (PCI)
     # Data Security Standard compliance, since customer data is no longer stored locally.
-    # 
+    #
     # To use the AuthorizeNetCimGateway CIM must be enabled for your account.
-    # 
+    #
     # Information about CIM is available on the {Authorize.Net website}[http://www.authorize.net/solutions/merchantsolutions/merchantservices/cim/].
     # Information about the CIM API is available at the {Authorize.Net Integration Center}[http://developer.authorize.net/]
-    # 
+    #
     # ==== Login and Password
-    # 
-    # The login and password are not the username and password you use to 
-    # login to the Authorize.Net Merchant Interface. Instead, you will 
-    # use the API Login ID as the login and Transaction Key as the 
+    #
+    # The login and password are not the username and password you use to
+    # login to the Authorize.Net Merchant Interface. Instead, you will
+    # use the API Login ID as the login and Transaction Key as the
     # password.
-    # 
+    #
     # ==== How to Get Your API Login ID and Transaction Key
     #
     # 1. Log into the Merchant Interface
@@ -26,12 +26,12 @@ module ActiveMerchant #:nodoc:
     # 4. Type in the answer to the secret question configured on setup
     # 5. Click Submit
     class AuthorizeNetCimGateway < Gateway
-    
+
       class_inheritable_accessor :test_url, :live_url
 
       self.test_url = 'https://apitest.authorize.net/xml/v1/request.api'
       self.live_url = 'https://api.authorize.net/xml/v1/request.api'
-      
+
       AUTHORIZE_NET_CIM_NAMESPACE = 'AnetApi/xml/v1/schema/AnetApiSchema.xsd'
 
       CIM_ACTIONS = {
@@ -50,7 +50,7 @@ module ActiveMerchant #:nodoc:
         :create_customer_profile_transaction => 'createCustomerProfileTransaction',
         :validate_customer_payment_profile => 'validateCustomerPaymentProfile'
       }
-      
+
       CIM_TRANSACTION_TYPES = {
         :auth_capture => 'profileTransAuthCapture',
         :auth_only => 'profileTransAuthOnly',
@@ -65,23 +65,23 @@ module ActiveMerchant #:nodoc:
         :test => 'testMode',
         :live => 'liveMode'
       }
-      
+
       BANK_ACCOUNT_TYPES = {
         :checking => 'checking',
         :savings => 'savings',
         :business_checking => 'businessChecking'
       }
-      
+
       ECHECK_TYPES = {
         :ccd => 'CCD',
         :ppd => 'PPD'
       }
-      
+
       self.homepage_url = 'http://www.authorize.net/'
       self.display_name = 'Authorize.Net CIM'
       self.supported_countries = ['US']
       self.supported_cardtypes = [:visa, :master, :american_express, :discover]
-    
+
       # Creates a new AuthorizeNetCimGateway
       #
       # The gateway requires that a valid API Login ID and Transaction Key be passed
@@ -91,7 +91,7 @@ module ActiveMerchant #:nodoc:
       #
       # * <tt>:login</tt> -- The Authorize.Net API Login ID (REQUIRED)
       # * <tt>:password</tt> -- The Authorize.Net Transaction Key. (REQUIRED)
-      # * <tt>:test</tt> -- +true+ or +false+. If true, perform transactions against the test server. 
+      # * <tt>:test</tt> -- +true+ or +false+. If true, perform transactions against the test server.
       #   Otherwise, perform transactions against the production server.
       def initialize(options = {})
         requires!(options, :login, :password)
@@ -101,9 +101,9 @@ module ActiveMerchant #:nodoc:
 
       # Creates a new customer profile along with any customer payment profiles and customer shipping addresses
       # for the customer profile.
-      # 
-      # Returns a Response with the Customer Profile ID of the new customer profile in the authorization field. 
-      # It is *CRITICAL* that you save this ID. There is no way to retrieve this through the API. You will not 
+      #
+      # Returns a Response with the Customer Profile ID of the new customer profile in the authorization field.
+      # It is *CRITICAL* that you save this ID. There is no way to retrieve this through the API. You will not
       # be able to create another Customer Profile with the same information.
       #
       # ==== Options
@@ -129,7 +129,7 @@ module ActiveMerchant #:nodoc:
         requires!(options, :customer_profile_id)
         requires!(options, :payment_profile)
         requires!(options[:payment_profile], :payment)
-        
+
         request = build_request(:create_customer_payment_profile, options)
         commit(:create_customer_payment_profile, request)
       end
@@ -143,7 +143,7 @@ module ActiveMerchant #:nodoc:
       def create_customer_shipping_address(options)
         requires!(options, :customer_profile_id)
         requires!(options, :address)
-        
+
         request = build_request(:create_customer_shipping_address, options)
         commit(:create_customer_shipping_address, request)
       end
@@ -204,9 +204,9 @@ module ActiveMerchant #:nodoc:
 
       # Retrieve a customer payment profile for an existing customer profile.
       #
-      # Returns a Response whose params hash contains all the payment profile information. Sensitive information such as credit card 
+      # Returns a Response whose params hash contains all the payment profile information. Sensitive information such as credit card
       # numbers will be masked.
-      # 
+      #
       # ==== Options
       #
       # * <tt>:customer_profile_id</tt> -- The Customer Profile ID of the customer with the payment profile to be retrieved. (REQUIRED)
@@ -221,8 +221,8 @@ module ActiveMerchant #:nodoc:
 
       # Retrieve a customer shipping address for an existing customer profile.
       #
-      # Returns a Response whose params hash contains all the shipping address information. 
-      # 
+      # Returns a Response whose params hash contains all the shipping address information.
+      #
       # ==== Options
       #
       # * <tt>:customer_profile_id</tt> -- The Customer Profile ID of the customer with the payment profile to be retrieved. (REQUIRED)
@@ -235,16 +235,16 @@ module ActiveMerchant #:nodoc:
         commit(:get_customer_shipping_address, request)
       end
 
-      # Updates an existing customer profile. 
-      # 
-      # Warning: if you do not provide a parameter in the <tt>:payment_profile</tt> hash, it is automatically set to nil at 
-      # Authorize.Net. You will most likely want to first get the profile hash using get_customer_profile and then only change the 
+      # Updates an existing customer profile.
+      #
+      # Warning: if you do not provide a parameter in the <tt>:payment_profile</tt> hash, it is automatically set to nil at
+      # Authorize.Net. You will most likely want to first get the profile hash using get_customer_profile and then only change the
       # elements you wish to change.
       #
       # ==== Options
       #
       # * <tt>:profile</tt> -- A hash containing the values the Customer Profile should be updated to. (REQUIRED)
-      # 
+      #
       # ==== Profile
       #
       # * <tt>:customer_profile_id</tt> -- The Customer Profile ID of the customer profile to update. (REQUIRED)
@@ -257,8 +257,8 @@ module ActiveMerchant #:nodoc:
       end
 
       # Updates a customer payment profile for an existing customer profile.
-      # 
-      # Warning: if you do not provide a parameter in the <tt>:payment_profile</tt> hash, it is automatically set to nil at 
+      #
+      # Warning: if you do not provide a parameter in the <tt>:payment_profile</tt> hash, it is automatically set to nil at
       # Authorize.Net. You will most likely want to first get the profile hash using get_customer_payment_profile and then only
       # change the elements you wish to change.
       #
@@ -266,7 +266,7 @@ module ActiveMerchant #:nodoc:
       #
       # * <tt>:customer_profile_id</tt> -- The Customer Profile ID of the customer with the payment profile to be updated. (REQUIRED)
       # * <tt>:payment_profile</tt> -- A hash containing the values the Customer Payment Profile should be updated to. (REQUIRED)
-      # 
+      #
       # ==== Payment Profile
       #
       # * <tt>:customer_payment_profile_id</tt> -- The Customer Payment Profile ID of the Customer Payment Profile to update. (REQUIRED)
@@ -279,8 +279,8 @@ module ActiveMerchant #:nodoc:
       end
 
       # Updates a customer shipping address for an existing customer profile.
-      # 
-      # Warning: if you do not provide a parameter in the <tt>:address</tt> hash, it is automatically set to nil at 
+      #
+      # Warning: if you do not provide a parameter in the <tt>:address</tt> hash, it is automatically set to nil at
       # Authorize.Net. You will most likely want to first get the profile hash using get_customer_shipping_address and then only
       # change the elements you wish to change.
       #
@@ -288,7 +288,7 @@ module ActiveMerchant #:nodoc:
       #
       # * <tt>:customer_profile_id</tt> -- The Customer Profile ID of the customer with the payment profile to be updated. (REQUIRED)
       # * <tt>:address</tt> -- A hash containing the values the Customer Shipping Address should be updated to. (REQUIRED)
-      # 
+      #
       # ==== Address
       #
       # * <tt>:customer_address_id</tt> -- The Customer Address ID of the Customer Payment Profile to update. (REQUIRED)
@@ -303,7 +303,7 @@ module ActiveMerchant #:nodoc:
       # Creates a new payment transaction from an existing customer profile
       #
       # This is what is used to charge a customer whose information you have stored in a Customer Profile.
-      # 
+      #
       # Returns a Response object that contains the result of the transaction in <tt>params['direct_response']</tt>
       #
       # ==== Options
@@ -394,7 +394,7 @@ module ActiveMerchant #:nodoc:
       # Creates a new payment transaction for void from an existing customer profile
       #
       # This is what is used to void a transaction you have stored in a Customer Profile.
-      # 
+      #
       # Returns a Response object that contains the result of the transaction in <tt>params['direct_response']</tt>
       #
       # ==== Options
@@ -404,7 +404,7 @@ module ActiveMerchant #:nodoc:
       # ==== Transaction
       #
       # * <tt>:trans_id</tt> -- The payment gateway assigned transaction id of the original transaction. (REQUIRED)
-      # * <tt>:customer_profile_id</tt> -- The Customer Profile ID of the customer to use in this transaction. 
+      # * <tt>:customer_profile_id</tt> -- The Customer Profile ID of the customer to use in this transaction.
       # * <tt>:customer_payment_profile_id</tt> -- The Customer Payment Profile ID of the Customer Payment Profile to use in this transaction.
       # * <tt>:customer_shipping_address_id</tt> -- Payment gateway assigned ID associated with the customer shipping address.
       def create_customer_profile_transaction_for_void(options)
@@ -424,7 +424,7 @@ module ActiveMerchant #:nodoc:
       # * <tt>:customer_profile_id</tt> -- The Customer Profile ID of the customer to use in this transaction. (REQUIRED)
       # * <tt>:customer_payment_profile_id</tt> -- The Customer Payment Profile ID of the Customer Payment Profile to be verified. (REQUIRED)
       # * <tt>:customer_address_id</tt> -- The Customer Address ID of the Customer Shipping Address to be verified.
-      # * <tt>:validation_mode</tt> -- <tt>:live</tt> or <tt>:test</tt> In Test Mode, only field validation is performed. 
+      # * <tt>:validation_mode</tt> -- <tt>:live</tt> or <tt>:test</tt> In Test Mode, only field validation is performed.
       #   In Live Mode, a transaction is generated and submitted to the processor with the amount of $0.01. If successful, the transaction is immediately voided. (REQUIRED)
       def validate_customer_payment_profile(options)
         requires!(options, :customer_profile_id, :customer_payment_profile_id, :validation_mode)
@@ -438,7 +438,7 @@ module ActiveMerchant #:nodoc:
       def expdate(credit_card)
         sprintf('%04d-%02d', credit_card.year, credit_card.month)
       end
-      
+
       def build_request(action, options = {})
         unless CIM_ACTIONS.include?(action)
           raise StandardError, "Invalid Customer Information Manager Action: #{action}"
@@ -461,7 +461,7 @@ module ActiveMerchant #:nodoc:
           xml.tag!('transactionKey', @options[:password])
         end
       end
-      
+
       def build_create_customer_profile_request(xml, options)
         add_profile(xml, options[:profile])
 
@@ -470,23 +470,23 @@ module ActiveMerchant #:nodoc:
 
       def build_create_customer_payment_profile_request(xml, options)
         xml.tag!('customerProfileId', options[:customer_profile_id])
-        
+
         xml.tag!('paymentProfile') do
           add_payment_profile(xml, options[:payment_profile])
         end
-        
+
         xml.tag!('validationMode', CIM_VALIDATION_MODES[options[:validation_mode]]) if options[:validation_mode]
 
         xml.target!
       end
-      
+
       def build_create_customer_shipping_address_request(xml, options)
         xml.tag!('customerProfileId', options[:customer_profile_id])
-        
+
         xml.tag!('address') do
           add_address(xml, options[:address])
         end
-        
+
         xml.target!
       end
 
@@ -525,8 +525,8 @@ module ActiveMerchant #:nodoc:
       end
 
       def build_update_customer_profile_request(xml, options)
-        add_profile(xml, options[:profile], true) 
-        
+        add_profile(xml, options[:profile], true)
+
         xml.target!
       end
 
@@ -534,7 +534,7 @@ module ActiveMerchant #:nodoc:
         xml.tag!('customerProfileId', options[:customer_profile_id])
 
         xml.tag!('paymentProfile') do
-          add_payment_profile(xml, options[:payment_profile]) 
+          add_payment_profile(xml, options[:payment_profile])
         end
 
         xml.target!
@@ -544,7 +544,7 @@ module ActiveMerchant #:nodoc:
         xml.tag!('customerProfileId', options[:customer_profile_id])
 
         xml.tag!('address') do
-          add_address(xml, options[:address]) 
+          add_address(xml, options[:address])
         end
 
         xml.target!
@@ -553,10 +553,10 @@ module ActiveMerchant #:nodoc:
       def build_create_customer_profile_transaction_request(xml, options)
         add_transaction(xml, options[:transaction])
         xml.tag!('extraOptions', "x_test_request=TRUE") if @options[:test]
-        
+
         xml.target!
       end
-      
+
       def build_validate_customer_payment_profile_request(xml, options)
         xml.tag!('customerProfileId', options[:customer_profile_id])
         xml.tag!('customerPaymentProfileId', options[:customer_payment_profile_id])
@@ -587,12 +587,12 @@ module ActiveMerchant #:nodoc:
           end
         end
       end
-      
+
       def add_transaction(xml, transaction)
         unless CIM_TRANSACTION_TYPES.include?(transaction[:type])
           raise StandardError, "Invalid Customer Information Manager Transaction Type: #{transaction[:type]}"
         end
-        
+
         xml.tag!('transaction') do
           xml.tag!(CIM_TRANSACTION_TYPES[transaction[:type]]) do
             # The amount to be billed to the customer
@@ -625,7 +625,7 @@ module ActiveMerchant #:nodoc:
           end
         end
       end
-      
+
       def add_order(xml, order)
         xml.tag!('order') do
           xml.tag!('invoiceNumber', order[:invoice_number]) if order[:invoice_number]
@@ -633,7 +633,7 @@ module ActiveMerchant #:nodoc:
           xml.tag!('purchaseOrderNumber', order[:purchase_order_number]) if order[:purchase_order_number]
         end
       end
-      
+
       def add_payment_profiles(xml, payment_profiles)
         xml.tag!('paymentProfiles') do
           add_payment_profile(xml, payment_profiles)
@@ -652,7 +652,7 @@ module ActiveMerchant #:nodoc:
             add_address(xml, payment_profile[:bill_to])
           end
         end
-        
+
         if payment_profile[:payment]
           xml.tag!('payment') do
             add_credit_card(xml, payment_profile[:payment][:credit_card]) if payment_profile[:payment].has_key?(:credit_card)
@@ -663,7 +663,7 @@ module ActiveMerchant #:nodoc:
             xml.tag!('taxId', payment_profile[:payment]) if payment_profile[:payment].has_key?(:tax_id)
           end
         end
-        
+
         xml.tag!('customerPaymentProfileId', payment_profile[:customer_payment_profile_id]) if payment_profile[:customer_payment_profile_id]
       end
 
@@ -685,7 +685,7 @@ module ActiveMerchant #:nodoc:
         xml.tag!('country', address[:country])
         xml.tag!('phoneNumber', address[:phone_number]) if address[:phone_number]
         xml.tag!('faxNumber', address[:fax_number]) if address[:fax_number]
-        
+
         xml.tag!('customerAddressId', address[:customer_address_id]) if address[:customer_address_id]
       end
 
@@ -702,14 +702,14 @@ module ActiveMerchant #:nodoc:
           xml.tag!('cardCode', credit_card.verification_value) if credit_card.verification_value?
         end
       end
-      
+
       # Adds customer’s bank account information
-      # Note: This element should only be included 
+      # Note: This element should only be included
       # when the payment method is bank account.
       def add_bank_account(xml, bank_account)
         raise StandardError, "Invalid Bank Account Type: #{bank_account[:account_type]}" unless BANK_ACCOUNT_TYPES.include?(bank_account[:account_type])
         raise StandardError, "Invalid eCheck Type: #{bank_account[:echeck_type]}" unless ECHECK_TYPES.include?(bank_account[:echeck_type])
-        
+
         xml.tag!('bankAccount') do
           # The type of bank account
           xml.tag!('accountType', BANK_ACCOUNT_TYPES[bank_account[:account_type]])
@@ -717,19 +717,19 @@ module ActiveMerchant #:nodoc:
           xml.tag!('routingNumber', bank_account[:routing_number])
           # The bank account number
           xml.tag!('accountNumber', bank_account[:account_number])
-          # The full name of the individual associated 
+          # The full name of the individual associated
           # with the bank account number
           xml.tag!('nameOnAccount', bank_account[:name_on_account])
           # The type of electronic check transaction
           xml.tag!('echeckType', ECHECK_TYPES[bank_account[:echeck_type]])
-          # The full name of the individual associated 
+          # The full name of the individual associated
           # with the bank account number (optional)
           xml.tag!('bankName', bank_account[:bank_name]) if bank_account[:bank_name]
         end
       end
-      
+
       # Adds customer’s driver's license information
-      # Note: This element is only required for 
+      # Note: This element is only required for
       # Wells Fargo SecureSource eCheck.Net merchants
       def add_drivers_license(xml, drivers_license)
         xml.tag!('driversLicense') do
@@ -743,11 +743,11 @@ module ActiveMerchant #:nodoc:
           xml.tag!('dateOfBirth', drivers_license[:date_of_birth])
         end
       end
-      
+
       def commit(action, request)
         url = test? ? test_url : live_url
         xml = ssl_post(url, request, "Content-Type" => "text/xml")
-        
+
         response_params = parse(action, xml)
 
         message = response_params['messages']['message']['text']
@@ -758,7 +758,7 @@ module ActiveMerchant #:nodoc:
           :test => test_mode,
           :authorization => response_params['customer_profile_id'] || (response_params['profile'] ? response_params['profile']['customer_profile_id'] : nil)
         )
-        
+
         response.params['direct_response'] = parse_direct_response(response) if response.params['direct_response']
         response
       end
@@ -816,7 +816,7 @@ module ActiveMerchant #:nodoc:
           }
         )
       end
-      
+
       def parse(action, xml)
         xml = REXML::Document.new(xml)
         root = REXML::XPath.first(xml, "//#{CIM_ACTIONS[action]}Response") ||
@@ -841,8 +841,8 @@ module ActiveMerchant #:nodoc:
                 response[key] = [response[key], value]
               end
             else
-              response[key] = parse_element(e) 
-            end 
+              response[key] = parse_element(e)
+            end
           }
         else
           response = node.text
