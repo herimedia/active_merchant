@@ -4,7 +4,6 @@ module ActiveMerchant
       def self.included(base)
         base.class_inheritable_accessor :test_redirect_url
         base.class_inheritable_accessor :live_redirect_url
-        base.live_redirect_url = 'https://www.paypal.com/cgibin/webscr'
       end
       
       def redirect_url
