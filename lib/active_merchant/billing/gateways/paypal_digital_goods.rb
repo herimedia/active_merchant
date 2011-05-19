@@ -5,13 +5,8 @@ require File.dirname(__FILE__) + '/paypal_express_common'
 module ActiveMerchant #:nodoc:
   module Billing #:nodoc:
     class PaypalDigitalGoodsGateway < PaypalExpressGateway
-      def test_redirect_url 
-        'https://www.sandbox.paypal.com/incontext'
-      end
-
-      def live_redirect_url 
-        'https://www.paypal.com/incontext'
-      end
+      self.test_redirect_url = 'https://www.sandbox.paypal.com/incontext'
+      self.live_redirect_url = 'https://www.paypal.com/incontext'
 
       self.supported_countries = ['US']
       self.homepage_url = 'https://www.x.com/community/ppx/xspaces/digital_goods'
