@@ -9,6 +9,7 @@ module ActiveMerchant #:nodoc:
       include PaypalExpressCommon
       
       self.test_redirect_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
+      self.live_redirect_url = 'https://www.paypal.com/cgibin/webscr'
       self.homepage_url = 'https://www.paypal.com/cgi-bin/webscr?cmd=xpt/merchant/ExpressCheckoutIntro-outside'
       self.display_name = 'PayPal Express Checkout'
       

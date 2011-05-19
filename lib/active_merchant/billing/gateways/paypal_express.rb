@@ -9,6 +9,8 @@ module ActiveMerchant #:nodoc:
       include PaypalExpressCommon
       
       self.test_redirect_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
+      self.live_redirect_url = 'https://www.paypal.com/cgibin/webscr'
+
       self.supported_countries = ['US']
       self.homepage_url = 'https://www.paypal.com/cgi-bin/webscr?cmd=xpt/merchant/ExpressCheckoutIntro-outside'
       self.display_name = 'PayPal Express Checkout'
@@ -125,7 +127,8 @@ module ActiveMerchant #:nodoc:
                         xml.tag! 'n2:Amount', localized_amount(item[:amount], currency_code), 'currencyID' => currency_code
                       end
                       xml.tag! 'n2:Description', item[:description]
-                      xml.tag! 'n2:ItemURL', item[:url]
+                      xml.tag! 'n2:ItemURL', item[:url] if item[:url]
+                      xml.tag! 'n2:ItemCategory', item[:category] if item[:category]
                     end
                   end
                 end
