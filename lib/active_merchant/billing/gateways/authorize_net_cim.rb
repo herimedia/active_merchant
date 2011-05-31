@@ -26,8 +26,7 @@ module ActiveMerchant #:nodoc:
     # 4. Type in the answer to the secret question configured on setup
     # 5. Click Submit
     class AuthorizeNetCimGateway < Gateway
-
-      class_inheritable_accessor :test_url, :live_url
+      class_attribute :test_url, :live_url
 
       self.test_url = 'https://apitest.authorize.net/xml/v1/request.api'
       self.live_url = 'https://api.authorize.net/xml/v1/request.api'
@@ -63,7 +62,8 @@ module ActiveMerchant #:nodoc:
       CIM_VALIDATION_MODES = {
         :none => 'none',
         :test => 'testMode',
-        :live => 'liveMode'
+        :live => 'liveMode',
+        :old => 'oldLiveMode'
       }
 
       BANK_ACCOUNT_TYPES = {
@@ -537,6 +537,8 @@ module ActiveMerchant #:nodoc:
           add_payment_profile(xml, options[:payment_profile])
         end
 
+        xml.tag!('validationMode', CIM_VALIDATION_MODES[options[:validation_mode]]) if options[:validation_mode]
+		
         xml.target!
       end
 
